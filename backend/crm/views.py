@@ -6,6 +6,11 @@ from .serializers import CustomerSerializer
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum
 
+from crm.models import Persona
+from crm.customer_service import build_customer_summary
+from crm.gemini_service import generate_persona
+
+
 import csv
 from io import TextIOWrapper
 
@@ -139,3 +144,28 @@ def customer_summary(request, customer_id):
     })
 
 
+@api_view(["POST"])
+def generate_customer_persona(request, customer_id):
+
+    customer = get_object_or_404(
+        Customer,
+        id=customer_id
+    )
+
+    summary = build_customer_summary(customer)
+
+    persona_data = generate_persona(summary)
+
+    persona, created = Persona.objects.update_or_create(
+        customer=customer,
+        defaults={
+            "persona_name": persona_data["persona_name"],
+            "description": persona_data["description"]
+        }
+    )
+
+    return Response({
+        "customer_id": customer.id,
+        "persona_name": persona.persona_name,
+        "description": persona.description
+    })

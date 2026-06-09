@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import customer_list, customer_detail, upload_customers, upload_orders, customer_summary
+from .views import customer_list, customer_detail, upload_customers, upload_orders, customer_summary, generate_customer_persona
 
 urlpatterns = [
     path("customers/", customer_list),
@@ -7,4 +7,5 @@ urlpatterns = [
     path("customers/upload/",upload_customers),
     path("orders/upload/",upload_orders),
     path("customers/<int:customer_id>/summary/",customer_summary),
+    path("personas/generate/<int:customer_id>/",generate_customer_persona),
 ]
