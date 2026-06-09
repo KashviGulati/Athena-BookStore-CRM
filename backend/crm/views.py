@@ -137,3 +137,5 @@ def customer_summary(request, customer_id):
         "total_spend": total_spend,
         "genres": genres
     })
+
+

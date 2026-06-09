@@ -34,3 +34,22 @@ class Order(models.Model):
 
     def __str__(self):
         return f"{self.book_title} - {self.customer.name}"
+    
+
+class Persona(models.Model):
+    customer = models.OneToOneField(
+        Customer,
+        on_delete=models.CASCADE,
+        related_name="persona"
+    )
+
+    persona_name = models.CharField(max_length=100)
+
+    description = models.TextField()
+
+    generated_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return self.persona_name
