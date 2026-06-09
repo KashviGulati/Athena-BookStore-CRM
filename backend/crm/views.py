@@ -32,3 +32,34 @@ def customer_detail(request, customer_id):
     return Response(serializer.data)
 
 
+@api_view(["POST"])
+def upload_customers(request):
+    file = request.FILES.get("file")
+
+    if not file:
+        return Response(
+            {"error": "No file uploaded"},
+            status=400
+        )
+
+    csv_file = TextIOWrapper(
+        file.file,
+        encoding="utf-8"
+    )
+
+    reader = csv.DictReader(csv_file)
+
+    count = 0
+
+    for row in reader:
+        Customer.objects.create(
+            name=row["customer_name"],
+            email=row["email"],
+            phone=row["phone"]
+        )
+
+        count += 1
+
+    return Response({
+        "message": f"{count} customers uploaded"
+    })
