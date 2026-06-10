@@ -13,6 +13,9 @@ from .athena_service import build_campaign_strategy
 from .segment_service import get_fantasy_readers
 from .crm_context_service import build_crm_context
 
+from .models import Campaign, Customer
+from .campaign_service import launch_campaign
+
 
 import csv
 from io import TextIOWrapper
@@ -222,4 +225,28 @@ def fantasy_readers(request):
         "segment": "Fantasy Readers",
         "audience_size": customers.count(),
         "customers": customer_data
+    })
+
+
+@api_view(["POST"])
+def launch_campaign_view(request, campaign_id):
+
+    campaign = Campaign.objects.get(
+        id=campaign_id
+    )
+
+    customers = Customer.objects.filter(
+        orders__genre="Fantasy"
+    ).distinct()
+
+    communications = launch_campaign(
+        campaign,
+        customers
+    )
+
+    return Response({
+        "campaign_id": campaign.id,
+        "communications_created": len(
+            communications
+        )
     })

@@ -114,3 +114,43 @@ class Campaign(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True
     )
+
+
+class Communication(models.Model):
+
+    campaign = models.ForeignKey(
+        Campaign,
+        on_delete=models.CASCADE,
+        related_name="communications"
+    )
+
+    customer = models.ForeignKey(
+        Customer,
+        on_delete=models.CASCADE
+    )
+
+    status = models.CharField(
+        max_length=50,
+        default="PENDING"
+    )
+
+    sent_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+
+class CommunicationEvent(models.Model):
+
+    communication = models.ForeignKey(
+        Communication,
+        on_delete=models.CASCADE
+    )
+
+    event_type = models.CharField(
+        max_length=50
+    )
+
+    timestamp = models.DateTimeField(
+        auto_now_add=True
+    )
