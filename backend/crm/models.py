@@ -89,3 +89,28 @@ class Segment(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class Campaign(models.Model):
+    goal = models.TextField()
+
+    segment = models.ForeignKey(
+        Segment,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    message = models.TextField()
+
+    channel = models.CharField(
+        max_length=50
+    )
+
+    status = models.CharField(
+        max_length=50,
+        default="DRAFT"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )

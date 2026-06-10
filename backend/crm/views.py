@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from .models import Customer, Order, Persona, AgentRun
+from .models import Customer, Order, Persona, AgentRun, Campaign
 from .serializers import CustomerSerializer
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum
@@ -10,6 +10,9 @@ from crm.models import Persona
 from crm.customer_service import build_customer_summary
 from crm.gemini_service import generate_persona
 from .athena_service import build_campaign_strategy
+from .segment_service import get_fantasy_readers
+from .crm_context_service import build_crm_context
+
 
 import csv
 from io import TextIOWrapper
@@ -176,7 +179,18 @@ def generate_campaign(request):
 
     goal = request.data.get("goal")
 
-    strategy = build_campaign_strategy(goal)
+    crm_context = build_crm_context()
+
+    strategy = build_campaign_strategy(
+        goal,
+        crm_context
+    )
+    campaign = Campaign.objects.create(
+        goal=goal,
+        message=strategy["message"],
+        channel=strategy["channel"],
+        status="DRAFT"
+    )
 
     agent_run = AgentRun.objects.create(
         goal=goal,
@@ -184,8 +198,28 @@ def generate_campaign(request):
         reasoning=strategy["reasoning"],
         recommended_channel=strategy["channel"]
     )
+    return Response({
+        "campaign_id": campaign.id,
+        "agent_run_id": agent_run.id,
+        **strategy
+})
+
+
+@api_view(["GET"])
+def fantasy_readers(request):
+
+    customers = get_fantasy_readers()
+
+    customer_data = [
+        {
+            "id": customer.id,
+            "name": customer.name
+        }
+        for customer in customers
+    ]
 
     return Response({
-        "id": agent_run.id,
-        **strategy
+        "segment": "Fantasy Readers",
+        "audience_size": customers.count(),
+        "customers": customer_data
     })
