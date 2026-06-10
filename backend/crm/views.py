@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from .models import Customer, Order
+from .models import Customer, Order, Persona, AgentRun
 from .serializers import CustomerSerializer
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum
@@ -9,7 +9,7 @@ from django.db.models import Sum
 from crm.models import Persona
 from crm.customer_service import build_customer_summary
 from crm.gemini_service import generate_persona
-
+from .athena_service import build_campaign_strategy
 
 import csv
 from io import TextIOWrapper
@@ -168,4 +168,24 @@ def generate_customer_persona(request, customer_id):
         "customer_id": customer.id,
         "persona_name": persona.persona_name,
         "description": persona.description
+    })
+
+
+@api_view(["POST"])
+def generate_campaign(request):
+
+    goal = request.data.get("goal")
+
+    strategy = build_campaign_strategy(goal)
+
+    agent_run = AgentRun.objects.create(
+        goal=goal,
+        selected_segment=strategy["segment"],
+        reasoning=strategy["reasoning"],
+        recommended_channel=strategy["channel"]
+    )
+
+    return Response({
+        "id": agent_run.id,
+        **strategy
     })

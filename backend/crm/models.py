@@ -53,3 +53,39 @@ class Persona(models.Model):
 
     def __str__(self):
         return self.persona_name
+    
+class AgentRun(models.Model):
+    goal = models.TextField()
+
+    selected_segment = models.CharField(
+        max_length=255
+    )
+
+    reasoning = models.TextField()
+
+    recommended_channel = models.CharField(
+        max_length=50
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return self.goal
+    
+
+
+class Segment(models.Model):
+    name = models.CharField(max_length=255)
+
+    criteria = models.TextField()
+
+    audience_size = models.IntegerField(default=0)
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return self.name
