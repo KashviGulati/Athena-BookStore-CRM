@@ -15,8 +15,22 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = "__all__"
 
+
 class CampaignSerializer(serializers.ModelSerializer):
+
+    segment_name = serializers.CharField(
+        source="segment.name",
+        read_only=True
+    )
 
     class Meta:
         model = Campaign
-        fields = "__all__"
+        fields = [
+            "id",
+            "goal",
+            "channel",
+            "status",
+            "created_at",
+            "segment",
+            "segment_name"
+        ]
