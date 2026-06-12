@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 from .models import Customer, Order, Persona, AgentRun, Campaign
-from .serializers import CustomerSerializer
+from .serializers import CustomerSerializer, CampaignSerializer
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum
 
@@ -10,12 +10,12 @@ from crm.models import Persona
 from crm.customer_service import build_customer_summary
 from crm.gemini_service import generate_persona
 from .athena_service import build_campaign_strategy
-from .segment_service import get_fantasy_readers
+from .segment_service import get_customers_by_genre
 from .crm_context_service import build_crm_context
 
-from .models import Campaign, Customer, Communication, CommunicationEvent
+from .models import Campaign, Customer, Communication, CommunicationEvent, Segment
 from .campaign_service import launch_campaign
-
+from .segment_service import get_customers_by_genre
 
 import csv
 from io import TextIOWrapper
@@ -181,6 +181,8 @@ def generate_customer_persona(request, customer_id):
 def generate_campaign(request):
 
     goal = request.data.get("goal")
+    print(request.data)
+    print(goal)
 
     crm_context = build_crm_context()
 
@@ -188,12 +190,20 @@ def generate_campaign(request):
         goal,
         crm_context
     )
+    segment, created = Segment.objects.get_or_create(
+        name=strategy["segment"]
+    )
+    audience_size = Customer.objects.filter(
+        persona__persona_name=segment.name
+    ).count()
+
     campaign = Campaign.objects.create(
         goal=goal,
+        segment=segment,
         message=strategy["message"],
         channel=strategy["channel"],
         status="DRAFT"
-    )
+)
 
     agent_run = AgentRun.objects.create(
         goal=goal,
@@ -204,6 +214,7 @@ def generate_campaign(request):
     return Response({
         "campaign_id": campaign.id,
         "agent_run_id": agent_run.id,
+        "audience_size": audience_size,
         **strategy
 })
 
@@ -235,14 +246,18 @@ def launch_campaign_view(request, campaign_id):
         id=campaign_id
     )
 
+    from crm.models import Persona
+
     customers = Customer.objects.filter(
-        orders__genre="Fantasy"
-    ).distinct()
+        persona__persona_name=campaign.segment.name
+    )
 
     communications = launch_campaign(
         campaign,
         customers
     )
+    campaign.status = "LAUNCHED"
+    campaign.save()
 
     return Response({
         "campaign_id": campaign.id,
@@ -318,3 +333,18 @@ def campaign_analytics(request, campaign_id):
         "opened": opened,
         "clicked": clicked
     })
+
+
+@api_view(["GET"])
+def campaign_list(request):
+
+    campaigns = Campaign.objects.all()
+
+    serializer = CampaignSerializer(
+        campaigns,
+        many=True
+    )
+
+    return Response(
+        serializer.data
+    )

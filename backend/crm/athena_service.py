@@ -27,7 +27,8 @@ def build_campaign_strategy(goal, crm_context):
 
         The segment field must contain an existing persona name.
 
-        Do not invent customer segments.
+        If the goal mentions a genre, prioritize personas
+        whose interests align with that genre.
 
         Generate:
 
@@ -35,6 +36,10 @@ def build_campaign_strategy(goal, crm_context):
         2. reasoning
         3. channel
         4. message
+
+        If the goal explicitly mentions a genre,
+        prioritize customers who have purchased
+        books from that genre whenever possible.
 
         Return ONLY valid JSON.
 

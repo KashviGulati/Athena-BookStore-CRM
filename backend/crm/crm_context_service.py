@@ -1,4 +1,5 @@
 from .models import Customer, Persona, Order
+from django.db.models import Count
 
 
 def build_crm_context():
@@ -9,18 +10,19 @@ def build_crm_context():
         Persona.objects.values_list(
             "persona_name",
             flat=True
-        )
+        ).distinct()
     )
 
-    genres = list(
-        Order.objects.values_list(
-            "genre",
-            flat=True
-        ).distinct()
+    genre_distribution = list(
+        Order.objects.values(
+            "genre"
+        ).annotate(
+            count=Count("id")
+        )
     )
 
     return {
         "customer_count": customer_count,
         "personas": personas,
-        "genres": genres
+        "genre_distribution": genre_distribution
     }

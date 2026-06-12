@@ -14,30 +14,67 @@ model = genai.GenerativeModel(
 def generate_persona(customer_summary):
 
     prompt = f"""
-    Analyze this bookstore customer.
+        Analyze this bookstore customer.
 
-    Customer Data:
-    {customer_summary}
+        Customer Data:
+        {customer_summary}
 
-    Generate:
+        Generate:
 
-    1. persona_name
-    2. description
+        1. persona_name
+        2. description
 
-    Return ONLY valid JSON.
+        IMPORTANT:
 
-    Do not use markdown.
-    Do not use ```json.
-    Do not add explanations.
+        The persona must be based on the customer's
+        actual purchase genres.
 
-    Example:
+        Use consistent persona names.
 
-    {{
-      "persona_name": "Fantasy Explorer",
-      "description": "Frequently purchases fantasy novels."
-    }}
-    """
+        Examples:
 
+        Fantasy Reader
+        Mystery Reader
+        History Reader
+        Finance Reader
+        Productivity Reader
+        Self Help Reader
+
+        If the customer regularly purchases
+        multiple genres, combine them.
+
+        Examples:
+
+        Fantasy & Mystery Reader
+        History & Finance Reader
+        Fantasy & Self Help Reader
+
+        Do not invent creative names.
+
+        Do NOT use names like:
+
+        Epic Fantasy Collector
+        Fantasy Explorer
+        Book Enthusiast
+        Avid Reader
+        Literary Adventurer
+
+        The persona_name must clearly reflect
+        the customer's genres.
+
+        Return ONLY valid JSON.
+
+        Do not use markdown.
+        Do not use ```json.
+        Do not add explanations.
+
+        Example:
+
+        {{
+        "persona_name": "Fantasy Reader",
+        "description": "Frequently purchases fantasy books."
+        }}
+        """
     response = model.generate_content(prompt)
 
     clean_text = response.text.strip()
