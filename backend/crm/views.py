@@ -13,7 +13,7 @@ from .athena_service import build_campaign_strategy
 from .segment_service import get_fantasy_readers
 from .crm_context_service import build_crm_context
 
-from .models import Campaign, Customer
+from .models import Campaign, Customer, Communication, CommunicationEvent
 from .campaign_service import launch_campaign
 
 
@@ -249,4 +249,72 @@ def launch_campaign_view(request, campaign_id):
         "communications_created": len(
             communications
         )
+    })
+
+@api_view(["POST"])
+def receive_receipt(request):
+
+    communication_id = request.data.get(
+        "communication_id"
+    )
+
+    event = request.data.get(
+        "event"
+    )
+
+    communication = Communication.objects.get(
+        id=communication_id
+    )
+
+    communication.status = event
+    communication.save()
+
+    CommunicationEvent.objects.create(
+        communication=communication,
+        event_type=event
+    )
+
+    return Response({
+        "message": "Receipt received"
+    })
+
+
+@api_view(["GET"])
+def campaign_analytics(request, campaign_id):
+
+    campaign = Campaign.objects.get(
+        id=campaign_id
+    )
+
+    sent = Communication.objects.filter(
+        campaign=campaign
+    ).count()
+
+    delivered = CommunicationEvent.objects.filter(
+        communication__campaign=campaign,
+        event_type="DELIVERED"
+    ).count()
+
+    failed = CommunicationEvent.objects.filter(
+        communication__campaign=campaign,
+        event_type="FAILED"
+    ).count()
+
+    opened = CommunicationEvent.objects.filter(
+        communication__campaign=campaign,
+        event_type="OPENED"
+    ).count()
+
+    clicked = CommunicationEvent.objects.filter(
+        communication__campaign=campaign,
+        event_type="CLICKED"
+    ).count()
+
+    return Response({
+        "campaign_id": campaign.id,
+        "sent": sent,
+        "delivered": delivered,
+        "failed": failed,
+        "opened": opened,
+        "clicked": clicked
     })

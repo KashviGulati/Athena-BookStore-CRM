@@ -1,4 +1,5 @@
 from .models import Communication
+import requests
 
 
 def launch_campaign(campaign, customers):
@@ -13,6 +14,17 @@ def launch_campaign(campaign, customers):
             status="PENDING"
         )
 
-        communications.append(communication)
+        requests.post(
+            "http://127.0.0.1:8001/send",
+            json={
+                "communication_id": communication.id,
+                "channel": campaign.channel,
+                "message": campaign.message
+            }
+        )
+
+        communications.append(
+            communication
+        )
 
     return communications

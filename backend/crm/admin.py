@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Customer, Order, Persona, AgentRun, Campaign, Communication
+from .models import Customer, Order, Persona, AgentRun, Campaign, Communication, CommunicationEvent
 
 
 admin.site.register(Customer)
@@ -8,4 +8,5 @@ admin.site.register(Persona)
 admin.site.register(AgentRun)
 admin.site.register(Campaign)
 admin.site.register(Communication)
+admin.site.register(CommunicationEvent)
 
