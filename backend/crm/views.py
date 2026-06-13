@@ -348,3 +348,14 @@ def campaign_list(request):
     return Response(
         serializer.data
     )
+
+@api_view(["GET"])
+def dashboard_stats(request):
+
+    return Response({
+        "customers": Customer.objects.count(),
+        "orders": Order.objects.count(),
+        "personas": Persona.objects.count(),
+        "campaigns": Campaign.objects.count(),
+        "communications": Communication.objects.count()
+    })
