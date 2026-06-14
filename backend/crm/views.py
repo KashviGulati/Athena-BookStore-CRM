@@ -6,6 +6,8 @@ from .serializers import CustomerSerializer, CampaignSerializer
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum
 
+import random
+
 from crm.models import Persona
 from crm.customer_service import build_customer_summary
 from crm.gemini_service import generate_persona
@@ -359,3 +361,58 @@ def dashboard_stats(request):
         "campaigns": Campaign.objects.count(),
         "communications": Communication.objects.count()
     })
+
+
+@api_view(["POST"])
+def simulate_channel_delivery(request):
+
+    pending = Communication.objects.filter(
+        status="PENDING"
+    )
+
+    processed = []
+
+    for communication in pending:
+
+        status = random.choice([
+            "DELIVERED",
+            "FAILED",
+            "OPENED",
+            "CLICKED"
+        ])
+
+        communication.status = status
+        communication.save()
+
+        CommunicationEvent.objects.create(
+            communication=communication,
+            event_type=status
+        )
+
+        processed.append({
+            "id": communication.id,
+            "status": status
+        })
+
+    return Response({
+        "processed": len(processed),
+        "results": processed
+    })
+
+
+@api_view(["GET"])
+def pending_communications(request):
+
+    communications = Communication.objects.all()
+
+    data = []
+
+    for c in communications:
+        data.append({
+            "id": c.id,
+            "customer": c.customer.name,
+            "campaign": c.campaign.goal,
+            "status": c.status
+        })
+
+    return Response(data)

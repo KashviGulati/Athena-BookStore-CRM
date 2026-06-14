@@ -10,6 +10,7 @@ import Customers from "./pages/Customers";
 import Athena from "./pages/Athena";
 import Campaigns from "./pages/Campaigns";
 import Analytics from "./pages/Analytics";
+import ChannelSimulator from "./pages/ChannelSimulator";
 
 function App() {
   return (
@@ -78,6 +79,11 @@ function App() {
             >
               Analytics
             </Link>
+            <Link to="/channel"
+            style={{ color: "white", textDecoration: "none" }}
+            >
+             Channel Service
+            </Link>
           </div>
         </aside>
 
@@ -93,6 +99,8 @@ function App() {
             <Route path="/athena" element={<Athena />} />
             <Route path="/campaigns" element={<Campaigns />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/channel" element={<ChannelSimulator />}
+/>
           </Routes>
         </main>
       </div>

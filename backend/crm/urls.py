@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import customer_list, customer_detail, upload_customers, upload_orders, customer_summary, generate_customer_persona, generate_campaign, fantasy_readers, launch_campaign_view, receive_receipt, campaign_analytics, campaign_list, dashboard_stats
+from .views import customer_list, customer_detail, upload_customers, upload_orders, customer_summary, generate_customer_persona, generate_campaign, fantasy_readers, launch_campaign_view, receive_receipt, campaign_analytics, campaign_list, dashboard_stats, pending_communications, simulate_channel_delivery
 
 urlpatterns = [
     path("customers/", customer_list),
@@ -15,4 +15,6 @@ urlpatterns = [
     path("campaigns/<int:campaign_id>/analytics/",campaign_analytics),
     path("campaigns/",campaign_list),
     path("dashboard/",dashboard_stats),
+    path("channel/pending/",pending_communications),
+    path("channel/simulate/",simulate_channel_delivery),
 ]
