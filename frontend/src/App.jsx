@@ -3,57 +3,101 @@ import {
   Routes,
   Route,
   Link,
-} from "react-router-dom"
+} from "react-router-dom";
 
-import Dashboard from "./pages/Dashboard"
-import Customers from "./pages/Customers"
-import Athena from "./pages/Athena"
-import Campaigns from "./pages/Campaigns"
-import Analytics from "./pages/Analytics"
+import Dashboard from "./pages/Dashboard";
+import Customers from "./pages/Customers";
+import Athena from "./pages/Athena";
+import Campaigns from "./pages/Campaigns";
+import Analytics from "./pages/Analytics";
 
 function App() {
   return (
     <BrowserRouter>
+      <div
+        style={{
+          display: "flex",
+          minHeight: "100vh",
+          background: "#e2e8f0",
+        }}
+      >
+        <aside
+          style={{
+            width: "240px",
+            background: "#111827",
+            color: "white",
+            padding: "24px",
+          }}
+        >
+          <h2
+            style={{
+              marginBottom: "30px",
+            }}
+          >
+            Athena CRM
+          </h2>
 
-      <nav>
-        <Link to="/">Dashboard</Link>{" | "}
-        <Link to="/customers">Customers</Link>{" | "}
-        <Link to="/athena">Athena</Link>{" | "}
-        <Link to="/campaigns">Campaigns</Link>{" | "}
-        <Link to="/analytics">Analytics</Link>
-      </nav>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "18px",
+            }}
+          >
+            <Link
+              to="/"
+              style={{ color: "white", textDecoration: "none" }}
+            >
+              Dashboard
+            </Link>
 
-      <Routes>
+            <Link
+              to="/customers"
+              style={{ color: "white", textDecoration: "none" }}
+            >
+              Customers
+            </Link>
 
-        <Route
-          path="/"
-          element={<Dashboard />}
-        />
+            <Link
+              to="/athena"
+              style={{ color: "white", textDecoration: "none" }}
+            >
+              Athena Agent
+            </Link>
 
-        <Route
-          path="/customers"
-          element={<Customers />}
-        />
+            <Link
+              to="/campaigns"
+              style={{ color: "white", textDecoration: "none" }}
+            >
+              Campaigns
+            </Link>
 
-        <Route
-          path="/athena"
-          element={<Athena />}
-        />
+            <Link
+              to="/analytics"
+              style={{ color: "white", textDecoration: "none" }}
+            >
+              Analytics
+            </Link>
+          </div>
+        </aside>
 
-        <Route
-          path="/campaigns"
-          element={<Campaigns />}
-        />
-
-        <Route
-          path="/analytics"
-          element={<Analytics />}
-        />
-
-      </Routes>
-
+        <main
+          style={{
+            flex: 1,
+            padding: "32px",
+          }}
+        >
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/customers" element={<Customers />} />
+            <Route path="/athena" element={<Athena />} />
+            <Route path="/campaigns" element={<Campaigns />} />
+            <Route path="/analytics" element={<Analytics />} />
+          </Routes>
+        </main>
+      </div>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
